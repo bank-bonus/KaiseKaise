@@ -1,36 +1,36 @@
 
 export enum Rarity {
-  BLUE = 'BLUE',       // Mil-Spec
-  PURPLE = 'PURPLE',   // Restricted
-  PINK = 'PINK',       // Classified
-  RED = 'RED',         // Covert
-  GOLD = 'GOLD'        // Special (Knife)
+  COMMON = 'COMMON',     // Budget cars
+  PREMIUM = 'PREMIUM',   // High-end brands
+  LUXURY = 'LUXURY',     // Sport/Luxury
+  EXOTIC = 'EXOTIC',     // Supercars
+  HYPER = 'HYPER'        // Rare collector items
 }
 
-export interface Skin {
+export interface Car {
   id: string;
-  name: string;
-  weapon: string;
+  brand: string;
+  model: string;
   rarity: Rarity;
-  price: number;
+  basePrice: number;
   imageUrl: string;
 }
 
-export interface Case {
+export interface Container {
   id: string;
   name: string;
   price: number;
   imageUrl: string;
-  skins: Skin[];
+  cars: Car[];
 }
 
-export interface InventoryItem extends Skin {
+export interface GarageItem extends Car {
   instanceId: string;
+  condition: number; // 0.0 to 1.0
   acquiredAt: number;
 }
 
 export interface AppState {
   balance: number;
-  inventory: InventoryItem[];
-  openedCases: number;
+  garage: GarageItem[];
 }

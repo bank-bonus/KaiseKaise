@@ -1,56 +1,52 @@
 
-import { Rarity, Case, Skin } from './types';
+import { Rarity, Container, Car } from './types';
 
 export const RARITY_COLORS: Record<Rarity, string> = {
-  [Rarity.BLUE]: '#4b69ff',
-  [Rarity.PURPLE]: '#8847ff',
-  [Rarity.PINK]: '#d32ee6',
-  [Rarity.RED]: '#eb4b4b',
-  [Rarity.GOLD]: '#ffae39',
+  [Rarity.COMMON]: '#94a3b8',
+  [Rarity.PREMIUM]: '#3b82f6',
+  [Rarity.LUXURY]: '#a855f7',
+  [Rarity.EXOTIC]: '#ef4444',
+  [Rarity.HYPER]: '#fbbf24',
 };
 
-const MOCK_SKINS: Skin[] = [
-  // BLUE
-  { id: 'b1', weapon: 'Glock-18', name: 'Candy Apple', rarity: Rarity.BLUE, price: 0.5, imageUrl: 'https://picsum.photos/seed/glock1/300/200' },
-  { id: 'b2', weapon: 'USP-S', name: 'Cyrex', rarity: Rarity.BLUE, price: 1.2, imageUrl: 'https://picsum.photos/seed/usps1/300/200' },
-  { id: 'b3', weapon: 'MP9', name: 'Ruby Poison Dart', rarity: Rarity.BLUE, price: 0.8, imageUrl: 'https://picsum.photos/seed/mp91/300/200' },
-  // PURPLE
-  { id: 'p1', weapon: 'AK-47', name: 'Blue Laminate', rarity: Rarity.PURPLE, price: 5.5, imageUrl: 'https://picsum.photos/seed/ak471/300/200' },
-  { id: 'p2', weapon: 'M4A4', name: 'Evil Daimyo', rarity: Rarity.PURPLE, price: 4.2, imageUrl: 'https://picsum.photos/seed/m4a41/300/200' },
-  { id: 'p3', weapon: 'AWP', name: 'PAW', rarity: Rarity.PURPLE, price: 6.8, imageUrl: 'https://picsum.photos/seed/awp1/300/200' },
-  // PINK
-  { id: 'pi1', weapon: 'AK-47', name: 'Redline', rarity: Rarity.PINK, price: 25.0, imageUrl: 'https://picsum.photos/seed/ak472/300/200' },
-  { id: 'pi2', weapon: 'M4A1-S', name: 'Hyper Beast', rarity: Rarity.PINK, price: 32.0, imageUrl: 'https://picsum.photos/seed/m4a1s1/300/200' },
-  { id: 'pi3', weapon: 'AWP', name: 'Asiimov', rarity: Rarity.PINK, price: 120.0, imageUrl: 'https://picsum.photos/seed/awp2/300/200' },
-  // RED
-  { id: 'r1', weapon: 'M4A4', name: 'Howl', rarity: Rarity.RED, price: 5500.0, imageUrl: 'https://picsum.photos/seed/m4a42/300/200' },
-  { id: 'r2', weapon: 'AK-47', name: 'Fire Serpent', rarity: Rarity.RED, price: 1200.0, imageUrl: 'https://picsum.photos/seed/ak473/300/200' },
-  { id: 'r3', weapon: 'AWP', name: 'Dragon Lore', rarity: Rarity.RED, price: 15000.0, imageUrl: 'https://picsum.photos/seed/awp3/300/200' },
-  // GOLD
-  { id: 'g1', weapon: 'Karambit', name: 'Doppler', rarity: Rarity.GOLD, price: 800.0, imageUrl: 'https://picsum.photos/seed/knife1/300/200' },
-  { id: 'g2', weapon: 'M9 Bayonet', name: 'Gamma Doppler', rarity: Rarity.GOLD, price: 1200.0, imageUrl: 'https://picsum.photos/seed/knife2/300/200' },
+const MOCK_CARS: Car[] = [
+  // COMMON
+  { id: 'c1', brand: 'Toyota', model: 'Corolla GR', rarity: Rarity.COMMON, basePrice: 25000, imageUrl: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=400&auto=format&fit=crop' },
+  { id: 'c2', brand: 'Honda', model: 'Civic Type R', rarity: Rarity.COMMON, basePrice: 32000, imageUrl: 'https://images.unsplash.com/photo-1605515298946-d062f2e9da53?q=80&w=400&auto=format&fit=crop' },
+  // PREMIUM
+  { id: 'p1', brand: 'BMW', model: 'M4 Competition', rarity: Rarity.PREMIUM, basePrice: 85000, imageUrl: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=400&auto=format&fit=crop' },
+  { id: 'p2', brand: 'Audi', model: 'RS6 Avant', rarity: Rarity.PREMIUM, basePrice: 110000, imageUrl: 'https://images.unsplash.com/photo-1606148344602-0c9f13d80357?q=80&w=400&auto=format&fit=crop' },
+  // LUXURY
+  { id: 'l1', brand: 'Porsche', model: '911 GT3 RS', rarity: Rarity.LUXURY, basePrice: 225000, imageUrl: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=400&auto=format&fit=crop' },
+  { id: 'l2', brand: 'Mercedes', model: 'AMG GT', rarity: Rarity.LUXURY, basePrice: 180000, imageUrl: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=400&auto=format&fit=crop' },
+  // EXOTIC
+  { id: 'e1', brand: 'Lamborghini', model: 'Aventador SVJ', rarity: Rarity.EXOTIC, basePrice: 550000, imageUrl: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=400&auto=format&fit=crop' },
+  { id: 'e2', brand: 'Ferrari', model: 'SF90 Stradale', rarity: Rarity.EXOTIC, basePrice: 620000, imageUrl: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?q=80&w=400&auto=format&fit=crop' },
+  // HYPER
+  { id: 'h1', brand: 'Bugatti', model: 'Chiron Pur Sport', rarity: Rarity.HYPER, basePrice: 3500000, imageUrl: 'https://images.unsplash.com/photo-1600712242805-5f5d270b47e5?q=80&w=400&auto=format&fit=crop' },
+  { id: 'h2', brand: 'Koenigsegg', model: 'Jesko Absolut', rarity: Rarity.HYPER, basePrice: 4200000, imageUrl: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=400&auto=format&fit=crop' },
 ];
 
-export const CASES: Case[] = [
+export const CONTAINERS: Container[] = [
   {
-    id: 'case_chroma',
-    name: 'Chroma Case',
-    price: 2.5,
-    imageUrl: 'https://picsum.photos/seed/case1/200/200',
-    skins: MOCK_SKINS,
+    id: 'cont_budget',
+    name: 'Import Terminal',
+    price: 5000,
+    imageUrl: 'https://images.unsplash.com/photo-1494412574743-01103cb5d56b?q=80&w=300&auto=format&fit=crop',
+    cars: MOCK_CARS.filter(c => [Rarity.COMMON, Rarity.PREMIUM].includes(c.rarity)),
   },
   {
-    id: 'case_gamma',
-    name: 'Gamma Case',
-    price: 3.5,
-    imageUrl: 'https://picsum.photos/seed/case2/200/200',
-    skins: MOCK_SKINS.slice(3),
+    id: 'cont_exotic',
+    name: 'Luxury Vault',
+    price: 50000,
+    imageUrl: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=300&auto=format&fit=crop',
+    cars: MOCK_CARS.filter(c => [Rarity.LUXURY, Rarity.EXOTIC, Rarity.HYPER].includes(c.rarity)),
   },
   {
-    id: 'case_wildfire',
-    name: 'Wildfire Case',
-    price: 1.5,
-    imageUrl: 'https://picsum.photos/seed/case3/200/200',
-    skins: MOCK_SKINS.filter(s => s.rarity !== Rarity.GOLD),
+    id: 'cont_hyper',
+    name: 'Collector’s Reserve',
+    price: 500000,
+    imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=300&auto=format&fit=crop',
+    cars: MOCK_CARS.filter(c => [Rarity.EXOTIC, Rarity.HYPER].includes(c.rarity)),
   }
 ];

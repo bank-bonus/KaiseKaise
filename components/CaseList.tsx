@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { Case } from '../types';
+/* Import Container instead of deprecated Case type */
+import { Container } from '../types';
 
 interface CaseListProps {
-  cases: Case[];
-  onOpen: (c: Case) => void;
+  cases: Container[];
+  onOpen: (c: Container) => void;
 }
 
 const CaseList: React.FC<CaseListProps> = ({ cases, onOpen }) => {
@@ -25,7 +26,7 @@ const CaseList: React.FC<CaseListProps> = ({ cases, onOpen }) => {
           <div className="p-6 bg-[#242c3d] border-t border-gray-800 flex-grow flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-bold text-white mb-1">{c.name}</h3>
-              <p className="text-gray-400 text-sm mb-4">Contains high value skins</p>
+              <p className="text-gray-400 text-sm mb-4">Contains high value assets</p>
             </div>
             <div className="flex items-center justify-between mt-auto">
               <span className="text-2xl font-bold text-yellow-500">${c.price.toFixed(2)}</span>
@@ -33,7 +34,7 @@ const CaseList: React.FC<CaseListProps> = ({ cases, onOpen }) => {
                 onClick={() => onOpen(c)}
                 className="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded-lg font-bold transition-all active:scale-95 shadow-lg shadow-yellow-500/20"
               >
-                OPEN CASE
+                OPEN CONTAINER
               </button>
             </div>
           </div>

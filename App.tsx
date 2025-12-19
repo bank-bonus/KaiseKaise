@@ -1,102 +1,112 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import CaseList from './components/CaseList';
-import CaseOpening from './components/CaseOpening';
-import InventoryGrid from './components/InventoryGrid';
-import ItemReveal from './components/ItemReveal';
-import { Case, Skin, InventoryItem, Rarity } from './types';
-import { CASES } from './constants';
+import ContainerList from './components/ContainerList';
+import ContainerOpening from './components/ContainerOpening';
+import GarageGrid from './components/GarageGrid';
+import CarReveal from './components/CarReveal';
+import { Container, Car, GarageItem, Rarity } from './types';
+import { CONTAINERS } from './constants';
 
 const App: React.FC = () => {
-  const [view, setView] = useState<'cases' | 'inventory'>('cases');
-  const [balance, setBalance] = useState<number>(1000); // Initial balance $1000
-  const [inventory, setInventory] = useState<InventoryItem[]>([]);
-  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+  const [view, setView] = useState<'containers' | 'garage'>('containers');
+  const [balance, setBalance] = useState<number>(50000); 
+  const [garage, setGarage] = useState<GarageItem[]>([]);
+  const [selectedContainer, setSelectedContainer] = useState<Container | null>(null);
   const [isOpening, setIsOpening] = useState(false);
-  const [wonItem, setWonItem] = useState<InventoryItem | null>(null);
+  const [wonCar, setWonCar] = useState<GarageItem | null>(null);
 
-  // Load from local storage
   useEffect(() => {
-    const savedBalance = localStorage.getItem('gs_balance');
-    const savedInventory = localStorage.getItem('gs_inventory');
+    const savedBalance = localStorage.getItem('cp_balance');
+    const savedGarage = localStorage.getItem('cp_garage');
     if (savedBalance) setBalance(parseFloat(savedBalance));
-    if (savedInventory) setInventory(JSON.parse(savedInventory));
+    if (savedGarage) setGarage(JSON.parse(savedGarage));
   }, []);
 
-  // Save to local storage
   useEffect(() => {
-    localStorage.setItem('gs_balance', balance.toString());
-    localStorage.setItem('gs_inventory', JSON.stringify(inventory));
-  }, [balance, inventory]);
+    localStorage.setItem('cp_balance', balance.toString());
+    localStorage.setItem('cp_garage', JSON.stringify(garage));
+  }, [balance, garage]);
 
-  const handleOpenCase = (c: Case) => {
+  const handleOpenContainer = (c: Container) => {
     if (balance < c.price) {
-      alert("Insufficient balance!");
+      alert("Insufficient funds to open this container!");
       return;
     }
     setBalance(prev => prev - c.price);
-    setSelectedCase(c);
+    setSelectedContainer(c);
     setIsOpening(true);
   };
 
-  const handleCaseFinished = (item: Skin) => {
-    const newItem: InventoryItem = {
-      ...item,
+  const handleContainerFinished = (car: Car) => {
+    const newCar: GarageItem = {
+      ...car,
       instanceId: Math.random().toString(36).substr(2, 9),
+      condition: Math.random() * 0.7 + 0.3, // 30% to 100% condition
       acquiredAt: Date.now(),
     };
-    setWonItem(newItem);
+    setWonCar(newCar);
     setIsOpening(false);
   };
 
-  const handleSellItem = (item: InventoryItem) => {
-    setInventory(prev => prev.filter(i => i.instanceId !== item.instanceId));
-    setBalance(prev => prev + item.price);
-    if (wonItem && wonItem.instanceId === item.instanceId) {
-      setWonItem(null);
+  const handleSellCar = (item: GarageItem) => {
+    const currentPrice = item.basePrice * item.condition;
+    setGarage(prev => prev.filter(i => i.instanceId !== item.instanceId));
+    setBalance(prev => prev + currentPrice);
+    if (wonCar && wonCar.instanceId === item.instanceId) {
+      setWonCar(null);
     }
   };
 
-  const handleKeepItem = (item: InventoryItem) => {
-    setInventory(prev => [...prev, item]);
-    setWonItem(null);
+  const handleKeepCar = (item: GarageItem) => {
+    setGarage(prev => [...prev, item]);
+    setWonCar(null);
   };
 
-  const addFunds = () => {
-    setBalance(prev => prev + 100);
+  const handleRepairCar = (item: GarageItem) => {
+    const repairCost = (1 - item.condition) * item.basePrice * 0.3;
+    if (balance < repairCost) {
+      alert("Not enough money for repairs!");
+      return;
+    }
+    setBalance(prev => prev - repairCost);
+    setGarage(prev => prev.map(car => 
+      car.instanceId === item.instanceId ? { ...car, condition: 1.0 } : car
+    ));
   };
+
+  const addFunds = () => setBalance(prev => prev + 10000);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0e14]">
+    <div className="min-h-screen flex flex-col bg-[#05070a]">
       <Navbar 
         balance={balance} 
-        onViewChange={setView} 
-        currentView={view} 
+        onViewChange={(v) => setView(v as any)} 
+        currentView={view as any} 
         onAddFunds={addFunds}
       />
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        {selectedCase && isOpening ? (
-          <CaseOpening 
-            targetCase={selectedCase} 
-            onFinished={handleCaseFinished} 
+        {selectedContainer && isOpening ? (
+          <ContainerOpening 
+            targetContainer={selectedContainer} 
+            onFinished={handleContainerFinished} 
           />
-        ) : wonItem ? (
-          <ItemReveal 
-            item={wonItem} 
-            onSell={() => handleSellItem(wonItem)} 
-            onKeep={() => handleKeepItem(wonItem)} 
+        ) : wonCar ? (
+          <CarReveal 
+            item={wonCar} 
+            onSell={() => handleSellCar(wonCar)} 
+            onKeep={() => handleKeepCar(wonCar)} 
           />
-        ) : view === 'cases' ? (
-          <CaseList cases={CASES} onOpen={handleOpenCase} />
+        ) : view === 'containers' ? (
+          <ContainerList containers={CONTAINERS} onOpen={handleOpenContainer} />
         ) : (
-          <InventoryGrid inventory={inventory} onSell={handleSellItem} />
+          <GarageGrid garage={garage} onSell={handleSellCar} onRepair={handleRepairCar} />
         )}
       </main>
 
-      <footer className="py-4 border-t border-gray-800 text-center text-gray-500 text-sm">
-        Global Strike: Case Simulator &copy; 2024. All weapon images are mock placeholders.
+      <footer className="py-8 border-t border-white/5 text-center text-gray-600 text-xs uppercase tracking-[0.2em]">
+        Elite Port Logistics &copy; 2024. All assets simulated for educational purposes.
       </footer>
     </div>
   );

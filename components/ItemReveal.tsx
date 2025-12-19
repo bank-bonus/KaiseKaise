@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { InventoryItem } from '../types';
+/* Updated to use GarageItem instead of deprecated InventoryItem */
+import { GarageItem } from '../types';
 import { RARITY_COLORS } from '../constants';
 
 interface ItemRevealProps {
-  item: InventoryItem;
+  item: GarageItem;
   onSell: () => void;
   onKeep: () => void;
 }
@@ -18,11 +19,14 @@ const ItemReveal: React.FC<ItemRevealProps> = ({ item, onSell, onKeep }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  /* Calculate market value based on condition */
+  const currentPrice = item.basePrice * item.condition;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fadeIn">
       <div className="absolute top-10 left-10 flex flex-col">
         <span className="text-xs text-gray-500 font-bold uppercase tracking-[0.2em] mb-1">Status</span>
-        <span className="text-2xl font-bold text-yellow-500 animate-pulse">ITEM ACQUIRED</span>
+        <span className="text-2xl font-bold text-yellow-500 animate-pulse">ASSET ACQUIRED</span>
       </div>
 
       <div className="flex flex-col items-center max-w-lg w-full px-6">
@@ -46,19 +50,19 @@ const ItemReveal: React.FC<ItemRevealProps> = ({ item, onSell, onKeep }) => {
                   >
                     <img 
                       src={item.imageUrl} 
-                      alt={item.name} 
+                      alt={item.model} 
                       className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
 
                   <div className="text-center">
-                    <h2 className="text-gray-400 text-lg font-bold uppercase tracking-widest mb-1">{item.weapon}</h2>
-                    <h1 className="text-4xl font-black text-white mb-2 leading-tight">{item.name}</h1>
+                    <h2 className="text-gray-400 text-lg font-bold uppercase tracking-widest mb-1">{item.brand}</h2>
+                    <h1 className="text-4xl font-black text-white mb-2 leading-tight">{item.model}</h1>
                     <div className="flex items-center justify-center gap-2">
                       <span className="px-3 py-1 rounded-full text-[10px] font-black tracking-tighter" style={{ backgroundColor: RARITY_COLORS[item.rarity], color: 'white' }}>
                         {item.rarity}
                       </span>
-                      <span className="text-2xl font-mono font-bold text-green-400">${item.price.toFixed(2)}</span>
+                      <span className="text-2xl font-mono font-bold text-green-400">${currentPrice.toFixed(2)}</span>
                     </div>
                   </div>
                </div>
@@ -72,13 +76,13 @@ const ItemReveal: React.FC<ItemRevealProps> = ({ item, onSell, onKeep }) => {
             onClick={onSell}
             className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-red-900/30 uppercase tracking-widest"
           >
-            Sell for ${item.price.toFixed(2)}
+            Sell for ${currentPrice.toFixed(2)}
           </button>
           <button 
             onClick={onKeep}
             className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-black py-4 rounded-xl transition-all active:scale-95 shadow-lg shadow-yellow-900/30 uppercase tracking-widest"
           >
-            Add to Inventory
+            Add to Garage
           </button>
         </div>
       </div>

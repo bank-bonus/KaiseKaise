@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Case, Skin, Rarity } from '../types';
+/* Updated imports to use current car-related types and correct Rarity enum */
+import { Container, Car, Rarity } from '../types';
 import { RARITY_COLORS } from '../constants';
 
 interface CaseOpeningProps {
-  targetCase: Case;
-  onFinished: (item: Skin) => void;
+  targetCase: Container;
+  onFinished: (item: Car) => void;
 }
 
 const CaseOpening: React.FC<CaseOpeningProps> = ({ targetCase, onFinished }) => {
@@ -13,27 +14,29 @@ const CaseOpening: React.FC<CaseOpeningProps> = ({ targetCase, onFinished }) => 
   const [isBlurry, setIsBlurry] = useState(false);
   const reelRef = useRef<HTMLDivElement>(null);
   
-  const generateRandomSkin = (skins: Skin[]): Skin => {
+  /* Updated random generation logic to use Car rarities */
+  const generateRandomCar = (cars: Car[]): Car => {
     const r = Math.random() * 100;
     let targetRarity: Rarity;
-    if (r < 80) targetRarity = Rarity.BLUE;
-    else if (r < 94) targetRarity = Rarity.PURPLE;
-    else if (r < 98) targetRarity = Rarity.PINK;
-    else if (r < 99.7) targetRarity = Rarity.RED;
-    else targetRarity = Rarity.GOLD;
+    if (r < 75) targetRarity = Rarity.COMMON;
+    else if (r < 90) targetRarity = Rarity.PREMIUM;
+    else if (r < 96) targetRarity = Rarity.LUXURY;
+    else if (r < 99.5) targetRarity = Rarity.EXOTIC;
+    else targetRarity = Rarity.HYPER;
 
-    const possible = skins.filter(s => s.rarity === targetRarity);
-    if (possible.length === 0) return skins[Math.floor(Math.random() * skins.length)];
+    const possible = cars.filter(s => s.rarity === targetRarity);
+    if (possible.length === 0) return cars[Math.floor(Math.random() * cars.length)];
     return possible[Math.floor(Math.random() * possible.length)];
   };
 
   const reelItems = useMemo(() => {
     const items = [];
     for (let i = 0; i < 70; i++) {
-      items.push(generateRandomSkin(targetCase.skins));
+      /* Use targetCase.cars which is the correct property for Container */
+      items.push(generateRandomCar(targetCase.cars));
     }
     return items;
-  }, [targetCase.skins]);
+  }, [targetCase.cars]);
 
   const winningIndex = 65; 
   const winningItem = reelItems[winningIndex];
@@ -126,13 +129,13 @@ const CaseOpening: React.FC<CaseOpeningProps> = ({ targetCase, onFinished }) => 
                 
                 <img 
                   src={item.imageUrl} 
-                  alt={item.name} 
+                  alt={item.model} 
                   className="w-36 h-28 object-contain drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)]"
                 />
                 
                 <div className="text-center w-full bg-black/40 backdrop-blur-sm p-2 rounded-md border border-white/5">
-                  <p className="text-[9px] text-gray-400 font-black uppercase tracking-tighter mb-0.5">{item.weapon}</p>
-                  <p className="text-[11px] text-white font-bold truncate leading-none">{item.name}</p>
+                  <p className="text-[9px] text-gray-400 font-black uppercase tracking-tighter mb-0.5">{item.brand}</p>
+                  <p className="text-[11px] text-white font-bold truncate leading-none">{item.model}</p>
                 </div>
               </div>
             </div>
