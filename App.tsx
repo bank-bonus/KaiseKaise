@@ -35,7 +35,6 @@ const App: React.FC = () => {
           if (savedBalance) setBalance(parseFloat(savedBalance));
           if (savedGarage) setGarage(JSON.parse(savedGarage));
         });
-        sdk.adv.showFullscreenAdv();
       });
     }
   }, []);
@@ -60,6 +59,7 @@ const App: React.FC = () => {
     setBalance(prev => prev - c.price);
     setSelectedContainer(c);
     setIsOpening(true);
+    document.body.classList.add('no-scroll');
   };
 
   const handleContainerFinished = (car: Car) => {
@@ -71,20 +71,18 @@ const App: React.FC = () => {
     };
     setWonCar(newCar);
     setIsOpening(false);
+    document.body.classList.remove('no-scroll');
     
-    if (ysdk && Math.random() > 0.5) {
+    if (ysdk && Math.random() > 0.4) {
       ysdk.adv.showFullscreenAdv();
     }
   };
 
   const handleSellCar = (item: GarageItem) => {
     const currentPrice = item.basePrice * item.condition;
-    const newGarage = garage.filter(i => i.instanceId !== item.instanceId);
-    setGarage(newGarage);
+    setGarage(prev => prev.filter(i => i.instanceId !== item.instanceId));
     setBalance(prev => prev + currentPrice);
-    if (wonCar && wonCar.instanceId === item.instanceId) {
-      setWonCar(null);
-    }
+    if (wonCar && wonCar.instanceId === item.instanceId) setWonCar(null);
   };
 
   const handleKeepCar = (item: GarageItem) => {
@@ -93,15 +91,10 @@ const App: React.FC = () => {
   };
 
   const handleRepairCar = (item: GarageItem) => {
-    const repairCost = (1 - item.condition) * item.basePrice * 0.3;
-    if (balance < repairCost) {
-      alert("Недостаточно денег для ремонта!");
-      return;
-    }
+    const repairCost = (1 - item.condition) * item.basePrice * 0.25;
+    if (balance < repairCost) return alert("Недостаточно денег!");
     setBalance(prev => prev - repairCost);
-    setGarage(prev => prev.map(car => 
-      car.instanceId === item.instanceId ? { ...car, condition: 1.0 } : car
-    ));
+    setGarage(prev => prev.map(car => car.instanceId === item.instanceId ? { ...car, condition: 1.0 } : car));
   };
 
   const handleAddFunds = () => {
@@ -116,21 +109,16 @@ const App: React.FC = () => {
     }
   };
 
-  const switchView = (v: 'containers' | 'garage' | 'races') => {
-    if (view !== v && ysdk) ysdk.adv.showFullscreenAdv();
-    setView(v);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-[#05070a]">
       <Navbar 
         balance={balance} 
-        onViewChange={(v) => switchView(v as any)} 
-        currentView={view as any} 
+        onViewChange={(v) => setView(v as any)} 
+        currentView={view} 
         onAddFunds={handleAddFunds}
       />
 
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-2 md:px-4 py-4 md:py-8">
         {selectedContainer && isOpening ? (
           <ContainerOpening 
             targetContainer={selectedContainer} 
@@ -151,12 +139,13 @@ const App: React.FC = () => {
             garage={garage} 
             balance={balance} 
             onResult={(res) => setBalance(prev => prev + res)}
+            ysdk={ysdk}
           />
         )}
       </main>
 
-      <footer className="py-8 border-t border-white/5 text-center text-gray-600 text-xs uppercase tracking-[0.2em]">
-        Elite Port Logistics &copy; 2024. Яндекс Игры.
+      <footer className="py-6 border-t border-white/5 text-center text-gray-700 text-[10px] uppercase tracking-widest">
+        Car Port Ops &copy; 2024. Яндекс Игры.
       </footer>
     </div>
   );
