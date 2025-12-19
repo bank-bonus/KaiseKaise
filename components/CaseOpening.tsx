@@ -9,17 +9,17 @@ interface CaseOpeningProps {
 }
 
 const CaseOpening: React.FC<CaseOpeningProps> = ({ targetCase, onFinished }) => {
-  const [isSpinning, setIsSpinning] = useState(true);
+  const [currentTranslate, setCurrentTranslate] = useState(0);
+  const [isBlurry, setIsBlurry] = useState(false);
   const reelRef = useRef<HTMLDivElement>(null);
   
-  // Вероятности: BLUE (80%), PURPLE (15%), PINK (4%), RED (0.8%), GOLD (0.2%)
   const generateRandomSkin = (skins: Skin[]): Skin => {
     const r = Math.random() * 100;
     let targetRarity: Rarity;
     if (r < 80) targetRarity = Rarity.BLUE;
-    else if (r < 95) targetRarity = Rarity.PURPLE;
-    else if (r < 99) targetRarity = Rarity.PINK;
-    else if (r < 99.8) targetRarity = Rarity.RED;
+    else if (r < 94) targetRarity = Rarity.PURPLE;
+    else if (r < 98) targetRarity = Rarity.PINK;
+    else if (r < 99.7) targetRarity = Rarity.RED;
     else targetRarity = Rarity.GOLD;
 
     const possible = skins.filter(s => s.rarity === targetRarity);
@@ -27,75 +27,112 @@ const CaseOpening: React.FC<CaseOpeningProps> = ({ targetCase, onFinished }) => 
     return possible[Math.floor(Math.random() * possible.length)];
   };
 
-  // Создаем 60 предметов для прокрутки
   const reelItems = useMemo(() => {
     const items = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 70; i++) {
       items.push(generateRandomSkin(targetCase.skins));
     }
     return items;
   }, [targetCase.skins]);
 
-  const winningIndex = 55; // Победный предмет всегда на 56-й позиции
+  const winningIndex = 65; 
   const winningItem = reelItems[winningIndex];
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsSpinning(false);
-      setTimeout(() => {
-        onFinished(winningItem);
-      }, 1000);
-    }, 6500); // Длительность прокрутки 6.5 сек
+    // Параметры анимации
+    const itemWidth = 180;
+    const itemMargin = 12;
+    const totalItemWidth = itemWidth + itemMargin;
+    const containerWidth = 1000;
+    const centerOffset = containerWidth / 2;
+    
+    // Случайное смещение внутри карточки для реалистичности остановки
+    const randomOffset = (Math.random() * (itemWidth - 20)) - (itemWidth / 2) + 10;
+    const targetX = (winningIndex * totalItemWidth) - centerOffset + (totalItemWidth / 2) + randomOffset;
 
-    return () => clearTimeout(timer);
+    // Запускаем вращение с небольшой задержкой для инициализации CSS
+    const startTimer = setTimeout(() => {
+      setIsBlurry(true);
+      setCurrentTranslate(targetX);
+    }, 100);
+
+    // Убираем блюр к концу
+    const blurTimer = setTimeout(() => {
+      setIsBlurry(false);
+    }, 5500);
+
+    // Завершаем
+    const finishTimer = setTimeout(() => {
+      onFinished(winningItem);
+    }, 7500);
+
+    return () => {
+      clearTimeout(startTimer);
+      clearTimeout(blurTimer);
+      clearTimeout(finishTimer);
+    };
   }, [winningItem, onFinished]);
 
-  // Расчет смещения для анимации
-  const itemWidth = 180;
-  const itemMargin = 12;
-  const totalItemWidth = itemWidth + itemMargin;
-  const containerWidth = 1000;
-  const centerOffset = containerWidth / 2;
-  const translateX = (winningIndex * totalItemWidth) - centerOffset + (totalItemWidth / 2) + (Math.random() * 80 - 40);
-
   return (
-    <div className="flex flex-col items-center justify-center py-16 animate-fadeIn">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-white mb-2">OPENING {targetCase.name.toUpperCase()}</h2>
-        <p className="text-gray-400 font-medium tracking-widest uppercase">Good Luck!</p>
+    <div className="flex flex-col items-center justify-center py-10 animate-fadeIn">
+      <div className="text-center mb-10 relative">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-1 bg-yellow-500 shadow-[0_0_20px_#eab308]"></div>
+        <h2 className="text-5xl font-black text-white mb-2 tracking-tighter">
+          UNBOXING <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">{targetCase.name.toUpperCase()}</span>
+        </h2>
+        <div className="flex items-center justify-center gap-2 text-gray-500 uppercase tracking-[0.4em] text-xs font-bold">
+          <span className="w-8 h-[1px] bg-gray-800"></span>
+          Fate is being decided
+          <span className="w-8 h-[1px] bg-gray-800"></span>
+        </div>
       </div>
 
-      <div className="relative w-full max-w-[1000px] h-[250px] bg-[#111827] rounded-xl overflow-hidden border border-gray-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="relative w-full max-w-[1000px] h-[280px] bg-[#0d1117]/80 backdrop-blur-md rounded-2xl overflow-hidden border border-white/5 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+        {/* Боковые затемнения для фокуса на центре */}
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0d1117] to-transparent z-20"></div>
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0d1117] to-transparent z-20"></div>
+
         {/* Маркер выбора */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-yellow-500 z-10 shadow-[0_0_15px_rgba(234,179,8,0.8)]"></div>
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-yellow-500 z-10"></div>
-        <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-yellow-500 z-10"></div>
+        <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-yellow-500/80 z-30 shadow-[0_0_25px_#eab308]">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-yellow-500 rotate-45 -translate-y-1/2 border-2 border-[#0d1117]"></div>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-yellow-500 rotate-45 translate-y-1/2 border-2 border-[#0d1117]"></div>
+        </div>
 
         {/* Контейнер барабана */}
         <div 
           ref={reelRef}
-          className="flex items-center h-full transition-transform duration-[6000ms] ease-[cubic-bezier(0.1,0,0.1,1)]"
+          className={`flex items-center h-full transition-transform duration-[7000ms] ease-[cubic-bezier(0.12,0,0.05,1)] ${isBlurry ? 'blur-[1px]' : 'blur-0'}`}
           style={{ 
-            transform: `translateX(-${translateX}px)`,
-            paddingLeft: '50%'
+            transform: `translateX(-${currentTranslate}px)`,
+            paddingLeft: '50%',
+            willChange: 'transform'
           }}
         >
           {reelItems.map((item, idx) => (
             <div 
               key={idx} 
-              className="flex-shrink-0 mx-[6px] w-[180px] h-[200px] bg-[#1c2331] border-b-4 relative group"
-              style={{ borderBottomColor: RARITY_COLORS[item.rarity] }}
+              className={`flex-shrink-0 mx-[6px] w-[180px] h-[220px] bg-gradient-to-b from-[#1c2331] to-[#111827] border border-white/5 rounded-lg relative group transition-all duration-300 overflow-hidden ${idx === winningIndex && !isBlurry ? 'scale-105 shadow-[0_0_30px_rgba(255,255,255,0.1)]' : ''}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-              <div className="p-4 flex flex-col items-center justify-center h-full">
+              <div className={`absolute bottom-0 left-0 right-0 h-1 z-10`} style={{ backgroundColor: RARITY_COLORS[item.rarity] }}></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              
+              {/* Фоновое свечение редкости */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 blur-[40px] opacity-20" style={{ backgroundColor: RARITY_COLORS[item.rarity] }}></div>
+
+              <div className="p-4 flex flex-col items-center justify-between h-full relative z-10">
+                <div className="w-full flex justify-end">
+                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: RARITY_COLORS[item.rarity] }}></div>
+                </div>
+                
                 <img 
                   src={item.imageUrl} 
                   alt={item.name} 
-                  className="w-32 h-24 object-contain mb-3 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]"
+                  className="w-36 h-28 object-contain drop-shadow-[0_15px_15px_rgba(0,0,0,0.6)]"
                 />
-                <div className="text-center">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase">{item.weapon}</p>
-                  <p className="text-xs text-white font-bold truncate max-w-full">{item.name}</p>
+                
+                <div className="text-center w-full bg-black/40 backdrop-blur-sm p-2 rounded-md border border-white/5">
+                  <p className="text-[9px] text-gray-400 font-black uppercase tracking-tighter mb-0.5">{item.weapon}</p>
+                  <p className="text-[11px] text-white font-bold truncate leading-none">{item.name}</p>
                 </div>
               </div>
             </div>
@@ -103,12 +140,14 @@ const CaseOpening: React.FC<CaseOpeningProps> = ({ targetCase, onFinished }) => 
         </div>
       </div>
 
-      <div className="mt-12 flex items-center gap-3">
-        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-        <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-        <div className="w-3 h-3 rounded-full bg-pink-500"></div>
-        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+      {/* Вероятности (Легенда) */}
+      <div className="mt-12 flex items-center gap-6 px-8 py-3 bg-[#111827]/50 rounded-full border border-white/5 backdrop-blur-sm">
+        {Object.entries(RARITY_COLORS).map(([rarity, color]) => (
+          <div key={rarity} className="flex items-center gap-2 group cursor-help">
+            <div className="w-3 h-3 rounded-sm shadow-[0_0_10px_currentColor]" style={{ backgroundColor: color, color }}></div>
+            <span className="text-[10px] font-black text-gray-500 group-hover:text-gray-300 transition-colors uppercase tracking-widest">{rarity}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
