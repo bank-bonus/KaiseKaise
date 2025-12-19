@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Strike: Case Simulator</title>
+  <title>Global Strike: Car Container Simulator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Yandex Games SDK -->
+  <script src="https://yandex.ru/games/sdk/v2"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
     
@@ -26,11 +28,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 0.5; filter: blur(10px); }
-      50% { opacity: 1; filter: blur(15px); }
-    }
-
     .animate-fadeIn {
       animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -45,12 +42,6 @@
     ::-webkit-scrollbar-track { background: #05070a; }
     ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #374151; }
-
-    .rarity-glow-BLUE { box-shadow: 0 0 15px -5px #4b69ff; }
-    .rarity-glow-PURPLE { box-shadow: 0 0 15px -5px #8847ff; }
-    .rarity-glow-PINK { box-shadow: 0 0 15px -5px #d32ee6; }
-    .rarity-glow-RED { box-shadow: 0 0 15px -5px #eb4b4b; }
-    .rarity-glow-GOLD { box-shadow: 0 0 20px -5px #ffae39; }
   </style>
   <script type="importmap">
 {
