@@ -5,11 +5,12 @@ import ContainerList from './components/ContainerList';
 import ContainerOpening from './components/ContainerOpening';
 import GarageGrid from './components/GarageGrid';
 import CarReveal from './components/CarReveal';
+import RaceView from './components/RaceView';
 import { Container, Car, GarageItem } from './types';
 import { CONTAINERS } from './constants';
 
 const App: React.FC = () => {
-  const [view, setView] = useState<'containers' | 'garage'>('containers');
+  const [view, setView] = useState<'containers' | 'garage' | 'races'>('containers');
   const [balance, setBalance] = useState<number>(50000); 
   const [garage, setGarage] = useState<GarageItem[]>([]);
   const [selectedContainer, setSelectedContainer] = useState<Container | null>(null);
@@ -18,39 +19,30 @@ const App: React.FC = () => {
   const [ysdk, setYsdk] = useState<any>(null);
   const [player, setPlayer] = useState<any>(null);
 
-  // Инициализация Яндекс SDK
   useEffect(() => {
     if ((window as any).YaGames) {
       (window as any).YaGames.init().then((sdk: any) => {
         setYsdk(sdk);
         sdk.getPlayer().then((_player: any) => {
           setPlayer(_player);
-          // Загрузка данных из облака Яндекса
           _player.getData(['balance', 'garage']).then((data: any) => {
             if (data.balance !== undefined) setBalance(data.balance);
             if (data.garage !== undefined) setGarage(data.garage);
           });
         }).catch(() => {
-          // Если игрок не авторизован, используем LocalStorage
           const savedBalance = localStorage.getItem('cp_balance');
           const savedGarage = localStorage.getItem('cp_garage');
           if (savedBalance) setBalance(parseFloat(savedBalance));
           if (savedGarage) setGarage(JSON.parse(savedGarage));
         });
-        
-        // Показ первой рекламы при запуске (опционально)
         sdk.adv.showFullscreenAdv();
       });
     }
   }, []);
 
-  // Сохранение данных
   const saveData = useCallback((newBalance: number, newGarage: GarageItem[]) => {
     if (player) {
-      player.setData({
-        balance: newBalance,
-        garage: newGarage
-      });
+      player.setData({ balance: newBalance, garage: newGarage });
     }
     localStorage.setItem('cp_balance', newBalance.toString());
     localStorage.setItem('cp_garage', JSON.stringify(newGarage));
@@ -62,7 +54,7 @@ const App: React.FC = () => {
 
   const handleOpenContainer = (c: Container) => {
     if (balance < c.price) {
-      alert("Insufficient funds!");
+      alert("Недостаточно средств!");
       return;
     }
     setBalance(prev => prev - c.price);
@@ -80,7 +72,6 @@ const App: React.FC = () => {
     setWonCar(newCar);
     setIsOpening(false);
     
-    // Показ межстраничной рекламы после открытия (не всегда, чтобы не злить)
     if (ysdk && Math.random() > 0.5) {
       ysdk.adv.showFullscreenAdv();
     }
@@ -104,41 +95,29 @@ const App: React.FC = () => {
   const handleRepairCar = (item: GarageItem) => {
     const repairCost = (1 - item.condition) * item.basePrice * 0.3;
     if (balance < repairCost) {
-      alert("Not enough money for repairs!");
+      alert("Недостаточно денег для ремонта!");
       return;
     }
-    const newBalance = balance - repairCost;
-    const newGarage = garage.map(car => 
+    setBalance(prev => prev - repairCost);
+    setGarage(prev => prev.map(car => 
       car.instanceId === item.instanceId ? { ...car, condition: 1.0 } : car
-    );
-    setBalance(newBalance);
-    setGarage(newGarage);
+    ));
   };
 
-  // Пополнение баланса через Rewarded Video
   const handleAddFunds = () => {
     if (ysdk) {
       ysdk.adv.showRewardedVideo({
         callbacks: {
-          onOpen: () => console.log('Video ad open.'),
-          onRewarded: () => {
-            setBalance(prev => prev + 25000); // Награда за просмотр
-          },
-          onClose: () => console.log('Video ad closed.'),
-          onError: (e: any) => console.error('Error while open video ad:', e)
+          onRewarded: () => setBalance(prev => prev + 25000),
         }
       });
     } else {
-      // Фолбэк если SDK не загружен
       setBalance(prev => prev + 10000);
     }
   };
 
-  const switchView = (v: 'containers' | 'garage') => {
-    if (view !== v && ysdk) {
-      // Показ рекламы при переключении вкладок
-      ysdk.adv.showFullscreenAdv();
-    }
+  const switchView = (v: 'containers' | 'garage' | 'races') => {
+    if (view !== v && ysdk) ysdk.adv.showFullscreenAdv();
     setView(v);
   };
 
@@ -165,13 +144,19 @@ const App: React.FC = () => {
           />
         ) : view === 'containers' ? (
           <ContainerList containers={CONTAINERS} onOpen={handleOpenContainer} />
-        ) : (
+        ) : view === 'garage' ? (
           <GarageGrid garage={garage} onSell={handleSellCar} onRepair={handleRepairCar} />
+        ) : (
+          <RaceView 
+            garage={garage} 
+            balance={balance} 
+            onResult={(res) => setBalance(prev => prev + res)}
+          />
         )}
       </main>
 
       <footer className="py-8 border-t border-white/5 text-center text-gray-600 text-xs uppercase tracking-[0.2em]">
-        Elite Port Logistics &copy; 2024. Yandex Games Edition.
+        Elite Port Logistics &copy; 2024. Яндекс Игры.
       </footer>
     </div>
   );

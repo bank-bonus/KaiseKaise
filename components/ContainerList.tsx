@@ -30,14 +30,14 @@ const ContainerList: React.FC<ContainerListProps> = ({ containers, onOpen }) => 
           <div className="p-8 pt-2 flex-grow flex flex-col justify-between">
             <div>
               <h3 className="text-3xl font-black text-white mb-2 italic tracking-tighter uppercase">{c.name}</h3>
-              <p className="text-gray-500 text-sm font-medium mb-6 uppercase tracking-widest">Sealed Freight • High Value Contents</p>
+              <p className="text-gray-500 text-sm font-medium mb-6 uppercase tracking-widest">Морской Фрахт • Высокая ценность</p>
             </div>
             
             <button 
               onClick={() => onOpen(c)}
               className="w-full bg-white hover:bg-yellow-500 text-black py-4 rounded-xl font-black transition-all active:scale-95 shadow-lg group-hover:shadow-yellow-500/20 uppercase tracking-[0.2em] text-xs"
             >
-              Authorize Opening
+              Авторизовать вскрытие
             </button>
           </div>
         </div>

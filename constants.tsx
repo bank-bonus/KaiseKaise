@@ -1,6 +1,14 @@
 
 import { Rarity, Container, Car } from './types';
 
+export const RARITY_LABELS: Record<Rarity, string> = {
+  [Rarity.COMMON]: 'Бюджетный',
+  [Rarity.PREMIUM]: 'Премиум',
+  [Rarity.LUXURY]: 'Люкс',
+  [Rarity.EXOTIC]: 'Экзотика',
+  [Rarity.HYPER]: 'Гиперкар',
+};
+
 export const RARITY_COLORS: Record<Rarity, string> = {
   [Rarity.COMMON]: '#94a3b8',
   [Rarity.PREMIUM]: '#3b82f6',
@@ -30,21 +38,21 @@ const MOCK_CARS: Car[] = [
 export const CONTAINERS: Container[] = [
   {
     id: 'cont_budget',
-    name: 'Import Terminal',
+    name: 'Импортный Терминал',
     price: 5000,
     imageUrl: 'https://images.unsplash.com/photo-1494412574743-01103cb5d56b?q=80&w=300&auto=format&fit=crop',
     cars: MOCK_CARS.filter(c => [Rarity.COMMON, Rarity.PREMIUM].includes(c.rarity)),
   },
   {
     id: 'cont_exotic',
-    name: 'Luxury Vault',
+    name: 'Люксовое Хранилище',
     price: 50000,
     imageUrl: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=300&auto=format&fit=crop',
     cars: MOCK_CARS.filter(c => [Rarity.LUXURY, Rarity.EXOTIC, Rarity.HYPER].includes(c.rarity)),
   },
   {
     id: 'cont_hyper',
-    name: 'Collector’s Reserve',
+    name: 'Резерв Коллекционера',
     price: 500000,
     imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=300&auto=format&fit=crop',
     cars: MOCK_CARS.filter(c => [Rarity.EXOTIC, Rarity.HYPER].includes(c.rarity)),

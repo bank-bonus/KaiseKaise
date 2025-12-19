@@ -1,10 +1,10 @@
 
 export enum Rarity {
-  COMMON = 'COMMON',     // Budget cars
-  PREMIUM = 'PREMIUM',   // High-end brands
-  LUXURY = 'LUXURY',     // Sport/Luxury
-  EXOTIC = 'EXOTIC',     // Supercars
-  HYPER = 'HYPER'        // Rare collector items
+  COMMON = 'COMMON',     // Бюджетные
+  PREMIUM = 'PREMIUM',   // Премиум
+  LUXURY = 'LUXURY',     // Люкс
+  EXOTIC = 'EXOTIC',     // Экзотика
+  HYPER = 'HYPER'        // Гиперкары
 }
 
 export interface Car {

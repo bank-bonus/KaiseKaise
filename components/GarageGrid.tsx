@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GarageItem, Rarity } from '../types';
-import { RARITY_COLORS } from '../constants';
+import { RARITY_COLORS, RARITY_LABELS } from '../constants';
 
 interface GarageGridProps {
   garage: GarageItem[];
@@ -21,27 +21,35 @@ const GarageGrid: React.FC<GarageGridProps> = ({ garage, onSell, onRepair }) => 
         <div>
           <div className="flex items-center gap-3 mb-2">
             <i className="fa-solid fa-warehouse text-yellow-500 text-2xl"></i>
-            <h2 className="text-5xl font-black text-white uppercase italic tracking-tighter">Private Garage</h2>
+            <h2 className="text-5xl font-black text-white uppercase italic tracking-tighter">Частный Гараж</h2>
           </div>
           <div className="flex items-center gap-6 text-gray-500 font-bold uppercase tracking-widest text-[10px]">
-            <span>{garage.length} VEHICLES</span>
+            <span>{garage.length} АВТОМОБИЛЕЙ</span>
             <div className="w-1.5 h-1.5 bg-gray-800 rounded-full"></div>
-            <span className="text-green-500">PORTFOLIO VALUE: ${totalValue.toLocaleString()}</span>
+            <span className="text-green-500">СТОИМОСТЬ КОЛЛЕКЦИИ: ${totalValue.toLocaleString()}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {['ALL', ...Object.values(Rarity)].map((r) => (
+          <button 
+            onClick={() => setFilter('ALL')}
+            className={`px-5 py-2 rounded-full text-[9px] font-black tracking-widest border transition-all ${
+              filter === 'ALL' ? 'bg-yellow-500 text-black border-yellow-500' : 'bg-black/40 text-gray-500 border-white/5'
+            }`}
+          >
+            ВСЕ
+          </button>
+          {Object.values(Rarity).map((r) => (
             <button 
               key={r}
-              onClick={() => setFilter(r as any)}
+              onClick={() => setFilter(r)}
               className={`px-5 py-2 rounded-full text-[9px] font-black tracking-widest border transition-all ${
                 filter === r 
                   ? 'bg-yellow-500 text-black border-yellow-500 shadow-lg shadow-yellow-500/20' 
                   : 'bg-black/40 text-gray-500 border-white/5 hover:text-white hover:border-white/20'
               }`}
             >
-              {r}
+              {RARITY_LABELS[r]}
             </button>
           ))}
         </div>
@@ -52,8 +60,8 @@ const GarageGrid: React.FC<GarageGridProps> = ({ garage, onSell, onRepair }) => 
           <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8">
             <i className="fa-solid fa-car-rear text-4xl text-gray-700"></i>
           </div>
-          <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">Garage Empty</h3>
-          <p className="text-gray-600 font-medium uppercase tracking-widest text-xs">Acquire assets via terminal to expand your collection</p>
+          <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">В гараже пусто</h3>
+          <p className="text-gray-600 font-medium uppercase tracking-widest text-xs">Приобретайте контейнеры в порту, чтобы расширить свою коллекцию</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -71,7 +79,7 @@ const GarageGrid: React.FC<GarageGridProps> = ({ garage, onSell, onRepair }) => 
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-6">
                     <span className="text-green-400 font-black text-sm font-mono tracking-tighter">${currentVal.toLocaleString()}</span>
-                    <span className="px-2 py-0.5 rounded bg-black/40 text-[8px] font-black text-gray-400 tracking-widest uppercase">{item.rarity}</span>
+                    <span className="px-2 py-0.5 rounded bg-black/40 text-[8px] font-black text-gray-400 tracking-widest uppercase">{RARITY_LABELS[item.rarity]}</span>
                   </div>
                   
                   <div className="flex items-center justify-center h-32 mb-6 group-hover:scale-110 transition-transform duration-500">
@@ -88,7 +96,7 @@ const GarageGrid: React.FC<GarageGridProps> = ({ garage, onSell, onRepair }) => 
                     
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-[8px] font-black text-gray-600 uppercase tracking-widest">
-                        <span>Condition</span>
+                        <span>Состояние</span>
                         <span>{(item.condition * 100).toFixed(0)}%</span>
                       </div>
                       <div className="h-1 bg-white/5 rounded-full overflow-hidden">
@@ -109,15 +117,15 @@ const GarageGrid: React.FC<GarageGridProps> = ({ garage, onSell, onRepair }) => 
                           ? 'bg-white/5 text-gray-700 cursor-not-allowed' 
                           : 'bg-white hover:bg-yellow-500 text-black'
                       }`}
-                      title={`Repair cost: $${repairCost.toLocaleString()}`}
+                      title={`Стоимость ремонта: $${repairCost.toLocaleString()}`}
                     >
-                      {item.condition >= 1 ? 'Mint' : 'Repair'}
+                      {item.condition >= 1 ? 'Идеал' : 'Ремонт'}
                     </button>
                     <button 
                       onClick={() => onSell(item)}
                       className="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-red-500/10"
                     >
-                      Sell
+                      Продать
                     </button>
                   </div>
                 </div>

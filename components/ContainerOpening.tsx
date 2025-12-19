@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Container, Car, Rarity } from '../types';
-import { RARITY_COLORS } from '../constants';
+import { RARITY_COLORS, RARITY_LABELS } from '../constants';
 
 interface ContainerOpeningProps {
   targetContainer: Container;
@@ -11,6 +11,7 @@ interface ContainerOpeningProps {
 const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, onFinished }) => {
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const [isBlurry, setIsBlurry] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   const generateRandomCar = (cars: Car[]): Car => {
     const r = Math.random() * 100;
@@ -26,6 +27,8 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
     return possible[Math.floor(Math.random() * possible.length)];
   };
 
+  // Важно: создаем список один раз при инициализации
+  const winningIndex = 65; 
   const reelItems = useMemo(() => {
     const items = [];
     for (let i = 0; i < 70; i++) {
@@ -34,31 +37,26 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
     return items;
   }, [targetContainer.cars]);
 
-  const winningIndex = 65; 
   const winningItem = reelItems[winningIndex];
 
   useEffect(() => {
     const itemWidth = 240;
     const itemMargin = 16;
     const totalItemWidth = itemWidth + itemMargin;
-    const containerWidth = window.innerWidth > 1000 ? 1000 : window.innerWidth;
-    const centerOffset = containerWidth / 2;
+    const viewWidth = containerRef.current?.clientWidth || 1000;
+    const centerOffset = viewWidth / 2;
     
-    const randomOffset = (Math.random() * (itemWidth - 40)) - (itemWidth / 2) + 20;
-    const targetX = (winningIndex * totalItemWidth) - centerOffset + (totalItemWidth / 2) + randomOffset;
+    // Случайная точка остановки внутри карточки
+    const randomShift = (Math.random() * (itemWidth - 60)) - (itemWidth / 2) + 30;
+    const targetX = (winningIndex * totalItemWidth) - centerOffset + (totalItemWidth / 2) + randomShift;
 
     const startTimer = setTimeout(() => {
       setIsBlurry(true);
       setCurrentTranslate(targetX);
-    }, 100);
+    }, 50);
 
-    const blurTimer = setTimeout(() => {
-      setIsBlurry(false);
-    }, 5500);
-
-    const finishTimer = setTimeout(() => {
-      onFinished(winningItem);
-    }, 7500);
+    const blurTimer = setTimeout(() => setIsBlurry(false), 5500);
+    const finishTimer = setTimeout(() => onFinished(winningItem), 7500);
 
     return () => {
       clearTimeout(startTimer);
@@ -68,14 +66,14 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
   }, [winningItem, onFinished]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-10 animate-fadeIn">
+    <div className="flex flex-col items-center justify-center py-10 animate-fadeIn" ref={containerRef}>
       <div className="text-center mb-12">
         <h2 className="text-5xl font-black text-white mb-2 tracking-tighter uppercase italic">
-          UNSEALING <span className="text-yellow-500">{targetContainer.name}</span>
+          ВСКРЫТИЕ <span className="text-yellow-500">{targetContainer.name}</span>
         </h2>
         <div className="flex items-center justify-center gap-3 text-gray-500 uppercase tracking-[0.5em] text-[10px] font-black">
           <div className="w-12 h-[1px] bg-white/10"></div>
-          Scanning Cargo Contents
+          Сканирование груза...
           <div className="w-12 h-[1px] bg-white/10"></div>
         </div>
       </div>
@@ -105,7 +103,9 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
               
               <div className="p-6 flex flex-col items-center justify-between h-full relative z-10">
-                <span className="self-end text-[10px] font-black tracking-widest text-gray-500 uppercase">{item.rarity}</span>
+                <span className="self-end text-[10px] font-black tracking-widest text-gray-500 uppercase">
+                  {RARITY_LABELS[item.rarity]}
+                </span>
                 
                 <img 
                   src={item.imageUrl} 
@@ -127,7 +127,7 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
         {Object.entries(RARITY_COLORS).map(([rarity, color]) => (
           <div key={rarity} className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_currentColor]" style={{ backgroundColor: color, color }}></div>
-            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{rarity}</span>
+            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{RARITY_LABELS[rarity as Rarity]}</span>
           </div>
         ))}
       </div>

@@ -3,8 +3,8 @@ import React from 'react';
 
 interface NavbarProps {
   balance: number;
-  onViewChange: (view: 'containers' | 'garage') => void;
-  currentView: 'containers' | 'garage';
+  onViewChange: (view: 'containers' | 'garage' | 'races') => void;
+  currentView: 'containers' | 'garage' | 'races';
   onAddFunds: () => void;
 }
 
@@ -25,33 +25,41 @@ const Navbar: React.FC<NavbarProps> = ({ balance, onViewChange, currentView, onA
           <h1 className="text-2xl md:text-3xl font-black tracking-tighter text-white leading-none">
             CAR<span className="text-yellow-500 italic">TYCOON</span>
           </h1>
-          <p className="text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">Export Simulator</p>
+          <p className="text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">Симулятор Экспорта</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-10">
+      <div className="flex items-center gap-2 md:gap-6">
         <div className="flex bg-black/40 rounded-xl p-1 border border-white/5 shadow-inner">
           <button 
             onClick={() => onViewChange('containers')}
-            className={`px-3 md:px-6 py-2 rounded-lg transition-all text-[10px] md:text-xs font-black tracking-widest uppercase ${
+            className={`px-3 md:px-5 py-2 rounded-lg transition-all text-[10px] md:text-xs font-black tracking-widest uppercase ${
               currentView === 'containers' ? 'bg-yellow-500 text-black shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'text-gray-500 hover:text-white'
             }`}
           >
-            Terminal
+            Порт
           </button>
           <button 
             onClick={() => onViewChange('garage')}
-            className={`px-3 md:px-6 py-2 rounded-lg transition-all text-[10px] md:text-xs font-black tracking-widest uppercase ${
+            className={`px-3 md:px-5 py-2 rounded-lg transition-all text-[10px] md:text-xs font-black tracking-widest uppercase ${
               currentView === 'garage' ? 'bg-yellow-500 text-black shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'text-gray-500 hover:text-white'
             }`}
           >
-            Garage
+            Гараж
+          </button>
+          <button 
+            onClick={() => onViewChange('races')}
+            className={`px-3 md:px-5 py-2 rounded-lg transition-all text-[10px] md:text-xs font-black tracking-widest uppercase ${
+              currentView === 'races' ? 'bg-yellow-500 text-black shadow-[0_0_20px_rgba(234,179,8,0.3)]' : 'text-gray-500 hover:text-white'
+            }`}
+          >
+            Гонки
           </button>
         </div>
 
         <div className="flex items-center gap-3 md:gap-5 bg-black/40 px-3 md:px-5 py-2 rounded-2xl border border-white/5">
           <div className="flex flex-col items-end">
-            <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest leading-none mb-1">Balance</span>
+            <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest leading-none mb-1">Баланс</span>
             <span className="text-lg md:text-2xl font-black text-green-400 font-mono tracking-tighter leading-none">
               ${balance.toLocaleString()}
             </span>
@@ -59,7 +67,6 @@ const Navbar: React.FC<NavbarProps> = ({ balance, onViewChange, currentView, onA
           <button 
             onClick={onAddFunds}
             className="group relative w-8 h-8 md:w-10 md:h-10 rounded-xl bg-yellow-500/10 hover:bg-yellow-500 transition-all duration-300 flex items-center justify-center border border-yellow-500/30"
-            title="Get Bonus (Watch Ad)"
           >
             <i className="fa-solid fa-video text-yellow-500 group-hover:text-black transition-colors"></i>
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
