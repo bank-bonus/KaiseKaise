@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Car Port: Case Simulator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,36 +18,50 @@
       margin: 0;
       overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
       background-image: 
         radial-gradient(circle at 50% 0%, #1a1f2e 0%, transparent 50%),
         radial-gradient(circle at 0% 100%, #0d1117 0%, transparent 40%);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
 
-    .animate-fadeIn {
-      animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .btn-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-shine::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+      transform: skewX(-25deg);
+      animation: shine 3s infinite;
     }
 
-    .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #eab308; border-radius: 10px; }
+    
+    /* Скрытие полосы прокрутки для чистого вида на мобайле */
+    * { scrollbar-width: thin; scrollbar-color: #eab308 transparent; }
 
-    /* Отключение скролла при открытии кейса */
-    .no-scroll { overflow: hidden; }
+    .no-scroll { overflow: hidden; position: fixed; width: 100%; }
   </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  <script type="importmap">
+  {
+    "imports": {
+      "react/": "https://esm.sh/react@^19.2.3/",
+      "react": "https://esm.sh/react@^19.2.3",
+      "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    }
   }
-}
-</script>
+  </script>
 </head>
 <body>
   <div id="root"></div>
