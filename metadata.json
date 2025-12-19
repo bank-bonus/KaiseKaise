@@ -1,0 +1,5 @@
+{
+  "name": "Global Strike: Case Simulator",
+  "description": "A high-fidelity CS-style case opening simulator featuring 3D-inspired animations, item rarity tiers, inventory management, and an integrated economy system.",
+  "requestFramePermissions": []
+}
