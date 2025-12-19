@@ -16,18 +16,28 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
   const generateRandomCar = (cars: Car[]): Car => {
     const r = Math.random() * 100;
     let targetRarity: Rarity;
-    if (r < 75) targetRarity = Rarity.COMMON;
-    else if (r < 90) targetRarity = Rarity.PREMIUM;
-    else if (r < 96) targetRarity = Rarity.LUXURY;
-    else if (r < 99.5) targetRarity = Rarity.EXOTIC;
-    else targetRarity = Rarity.HYPER;
+    
+    // Новая математика шансов (более жесткая)
+    if (r < 80) {
+      targetRarity = Rarity.COMMON; // 80%
+    } else if (r < 95) {
+      targetRarity = Rarity.PREMIUM; // 15%
+    } else if (r < 99) {
+      targetRarity = Rarity.LUXURY; // 4%
+    } else if (r < 99.8) {
+      targetRarity = Rarity.EXOTIC; // 0.8%
+    } else {
+      targetRarity = Rarity.HYPER; // 0.2%
+    }
 
     const possible = cars.filter(s => s.rarity === targetRarity);
-    if (possible.length === 0) return cars[Math.floor(Math.random() * cars.length)];
+    // Если в данном контейнере нет такой редкости, берем ближайшую доступную
+    if (possible.length === 0) {
+      return cars[Math.floor(Math.random() * cars.length)];
+    }
     return possible[Math.floor(Math.random() * possible.length)];
   };
 
-  // Важно: создаем список один раз при инициализации
   const winningIndex = 65; 
   const reelItems = useMemo(() => {
     const items = [];
@@ -46,7 +56,6 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
     const viewWidth = containerRef.current?.clientWidth || 1000;
     const centerOffset = viewWidth / 2;
     
-    // Случайная точка остановки внутри карточки
     const randomShift = (Math.random() * (itemWidth - 60)) - (itemWidth / 2) + 30;
     const targetX = (winningIndex * totalItemWidth) - centerOffset + (totalItemWidth / 2) + randomShift;
 
@@ -73,7 +82,7 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
         </h2>
         <div className="flex items-center justify-center gap-3 text-gray-500 uppercase tracking-[0.5em] text-[10px] font-black">
           <div className="w-12 h-[1px] bg-white/10"></div>
-          Сканирование груза...
+          Анализ содержимого контейнера...
           <div className="w-12 h-[1px] bg-white/10"></div>
         </div>
       </div>
@@ -97,7 +106,7 @@ const ContainerOpening: React.FC<ContainerOpeningProps> = ({ targetContainer, on
           {reelItems.map((item, idx) => (
             <div 
               key={idx} 
-              className={`flex-shrink-0 mx-2 w-[240px] h-[260px] bg-[#161b22] border-t border-white/5 rounded-2xl relative group transition-all duration-500 overflow-hidden ${idx === winningIndex && !isBlurry ? 'scale-105 border-yellow-500/50' : ''}`}
+              className={`flex-shrink-0 mx-2 w-[240px] h-[260px] bg-[#161b22] border-t border-white/5 rounded-2xl relative group transition-all duration-500 overflow-hidden ${idx === winningIndex && !isBlurry ? 'scale-105 border-yellow-500/50 shadow-[0_0_40px_rgba(234,179,8,0.1)]' : 'opacity-60'}`}
             >
               <div className="absolute top-0 left-0 right-0 h-1.5 z-10" style={{ backgroundColor: RARITY_COLORS[item.rarity] }}></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
