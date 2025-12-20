@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Container } from '../types';
-// Import RARITY_COLORS directly from constants
+import { Container, Rarity } from '../types';
 import { RARITY_COLORS } from '../constants';
 
 interface ContainerListProps {
@@ -47,20 +46,36 @@ const ContainerList: React.FC<ContainerListProps> = ({ containers, onOpen, level
                   </div>
                 </div>
               )}
+
+              {c.isMystery && !isLocked && (
+                 <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 w-8 h-8 rounded-lg flex items-center justify-center">
+                    <i className="fa-solid fa-question text-yellow-500 text-xs animate-pulse"></i>
+                 </div>
+              )}
             </div>
             
             <div className="p-5 flex flex-col justify-between flex-grow">
                <div className="mb-6">
-                 <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest opacity-60">
-                   Содержит: {c.cars.length} моделей
-                 </p>
-                 <div className="flex gap-1 mt-2">
-                   {/* Визуальные индикаторы редкостей внутри */}
-                   {Array.from(new Set(c.cars.map(car => car.rarity))).map(r => (
-                     // Fixed: Replaced require() with direct access to imported RARITY_COLORS
-                     <div key={r} className="w-2 h-2 rounded-full" style={{ backgroundColor: RARITY_COLORS[r] }}></div>
-                   ))}
-                 </div>
+                 {c.isMystery ? (
+                   <div className="flex flex-col gap-1">
+                      <p className="text-yellow-500/50 text-[10px] font-bold uppercase tracking-widest">
+                        Содержимое неизвестно
+                      </p>
+                      <p className="text-gray-600 text-[8px] font-medium uppercase italic">Рискните, чтобы узнать</p>
+                   </div>
+                 ) : (
+                   <>
+                    <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest opacity-60">
+                      Содержит: {c.cars.length} моделей
+                    </p>
+                    <div className="flex gap-1 mt-2">
+                      {/* Fix: Explicitly cast the rarity variable 'r' to Rarity to avoid 'unknown' index type error */}
+                      {Array.from(new Set(c.cars.map(car => car.rarity))).map(r => (
+                        <div key={r as string} className="w-2 h-2 rounded-full" style={{ backgroundColor: RARITY_COLORS[r as Rarity] }}></div>
+                      ))}
+                    </div>
+                   </>
+                 )}
                </div>
                <button 
                  onClick={() => !isLocked && onOpen(c)}

@@ -77,10 +77,16 @@ const App: React.FC = () => {
   };
 
   const handleContainerFinished = (car: Car) => {
+    // Если контейнер помечен как "Junkyard", состояние будет от 10% до 35%
+    const isJunkyard = selectedContainer?.isJunkyard;
+    const condition = isJunkyard 
+      ? Math.random() * 0.25 + 0.1 
+      : Math.random() * 0.5 + 0.5;
+
     const newCar: GarageItem = {
       ...car,
       instanceId: Math.random().toString(36).substr(2, 9),
-      condition: Math.random() * 0.5 + 0.5,
+      condition: condition,
       acquiredAt: Date.now(),
     };
     setWonCar(newCar);

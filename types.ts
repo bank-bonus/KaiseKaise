@@ -22,7 +22,9 @@ export interface Container {
   price: number;
   imageUrl: string;
   cars: Car[];
-  minLevel?: number; // Минимальный уровень для открытия
+  minLevel?: number;
+  isMystery?: boolean; // Скрывает список авто в интерфейсе
+  isJunkyard?: boolean; // Флаг для снижения состояния выпавшего авто
 }
 
 export interface GarageItem extends Car {
