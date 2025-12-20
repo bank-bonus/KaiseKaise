@@ -1,10 +1,10 @@
 
 export enum Rarity {
-  COMMON = 'COMMON',     // Бюджетные
-  PREMIUM = 'PREMIUM',   // Премиум
-  LUXURY = 'LUXURY',     // Люкс
-  EXOTIC = 'EXOTIC',     // Экзотика
-  HYPER = 'HYPER'        // Гиперкары
+  COMMON = 'COMMON',     
+  PREMIUM = 'PREMIUM',   
+  LUXURY = 'LUXURY',     
+  EXOTIC = 'EXOTIC',     
+  HYPER = 'HYPER'        
 }
 
 export interface Car {
@@ -22,15 +22,18 @@ export interface Container {
   price: number;
   imageUrl: string;
   cars: Car[];
+  minLevel?: number; // Минимальный уровень для открытия
 }
 
 export interface GarageItem extends Car {
   instanceId: string;
-  condition: number; // 0.0 to 1.0
+  condition: number; 
   acquiredAt: number;
 }
 
 export interface AppState {
   balance: number;
   garage: GarageItem[];
+  level: number;
+  xp: number;
 }
